@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend   # Frontend app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: donaemeka/expensy-frontend:latest   # Your Docker Hub image
+          ports:
+            - containerPort: 3000   # Frontend runs on port 3000
+          env:
+            - name: NEXT_PUBLIC_API_URL
+              vvalue: "http://ae2795fa33fc945ff8dad2b6d2875712-833512284.eu-west-2.elb.amazonaws.com:8706"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend   # Internal frontend service
+spec:
+  selector:
+    app: frontend
+  ports:
+    - port: 3000
+      targetPort: 3000
+  type: LoadBalancer   # Expose frontend publicly
